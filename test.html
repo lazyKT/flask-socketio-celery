@@ -1,0 +1,102 @@
+<!-- to test the flask-socket.io cors_allowed_regions -->
+<html>
+  <head>
+    <title>SocketIO Client</title>
+    <script src="https://cdn.socket.io/socket.io-3.0.1.min.js"></script>
+    <script>
+      const namespace = 'http://127.0.0.1:5000/test';
+      const sio = io(namespace);
+      
+
+      sio.on('connect', () => {
+        console.log('Connecting to Socket!');
+      });
+      
+
+      sio.on('client_connected', data => {
+        console.log(data.msg);
+      });
+
+
+      sio.on('msg_status', (msg) => {
+        console.log('Server:', msg);
+      });
+      
+      
+      // receive response for Celery Task POST
+      sio.on('celery_task_received', msg => {
+        console.log('Celery POST response', msg);
+      });
+
+
+      // listen for normal background task update
+      sio.on('update_status', res => {
+        console.log('Update Status :', res); 
+      });
+
+
+      // listen for celery background task update
+      sio.on('celery_bg_task', res => {
+        console.log('Celery Task Status', res);
+      });
+
+
+      // dissconnect response from server
+      sio.on('disconnect_response', msg => {
+        console.log('Disconnect Response', msg);
+      });
+
+      
+      // request normal background task
+      function my_event() {
+        console.log('Subscribe Clicked.');        
+        sio.emit('subscribe', {status: 'Ahhh......'});
+
+        return false;
+      }
+
+      
+      // requeset celery task
+      function celery_task() {
+        console.log('Celery Task Requested');
+        sio.emit('celery_bg');
+
+        return false;
+      }
+
+
+      function sendMessage() {
+        const msg = (document.getElementById("msg")).value;
+        if (msg !== "")
+          sio.emit("send_msg", {msg} );
+      }
+
+
+      function disconnect() {
+        console.log('disconnect clicked!');
+        sio.emit('disconnect_server', {msg: 'bye'});
+    
+        return false;
+      }
+
+
+    </script>
+  </head>
+  <body>
+    <h2>Socket IO Client Js</h2>
+    <button onclick="my_event()">
+      Subscribe
+    </button><br/>
+    <button onclick="celery_task()">
+      Celery Task
+    </button><br/>
+    <input id="msg"/>
+    <button onclick="sendMessage()">
+      Send Message
+    </button>
+    <br/>
+    <button onclick="disconnect()">
+      Disconnect
+    </button>
+  </body>
+</html>

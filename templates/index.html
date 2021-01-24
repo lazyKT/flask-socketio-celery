@@ -1,0 +1,14 @@
+<html>
+  <head>
+    <title>Flask Socket IO</title>
+    <script src="https://cdn.socket.io/socket.io-3.0.1.min.js"></script>
+    <script src="{{ url_for('static', filename='index.js') }}"></script>
+ </head>
+  
+  <body>
+    <h3>Flask Socket IO Example</h3>
+    <button onclick="startSocket()">Listen to Socket</button><br/>
+    <button onclick="requestCeleryTask()">Request Celery Task</button>
+  </body>
+
+</html>
